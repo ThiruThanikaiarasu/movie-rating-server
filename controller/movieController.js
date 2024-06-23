@@ -92,9 +92,79 @@ const deleteAMovie = async (request, response) => {
     }
 }
 
+const searchMovie = async (request, response) => {
+    const genre = request.query.genre || null
+    const title = request.query.title || null
+    const director = request.query.director || null
+
+    try{
+        let query = {}
+        if(genre) {
+            query.genre = { $regex: genre, $options: 'i' }
+        }
+        
+
+        if(title) {
+            query.title = { $regex: title, $options: 'i' }
+        }
+
+        if(director) {
+            query.director = { $regex: director, $options: 'i' }
+        }
+
+        console.log(query)
+
+        const filteredMovie = await movieModel.find(query);
+
+        response.status(200).send({ data: filteredMovie, message: 'Filtered results'})
+
+    }
+    catch(error) {
+        response.status(500).send({ message: error.message})
+    }
+}
+
+const getAllMovies = async (request, response) => {
+
+    try{
+
+        const allMovies = await movieModel.find()
+
+        response.status(200).send({ data: allMovies, message: 'All Movie fetched'})
+    }
+    catch(error) {
+        response.status(500).send({ message: error.message})
+    }
+}
+
+const searchByKeyWord = async (request, response) => {
+    const {keyword} = request.params
+    console.log(keyword)
+    try{
+
+        let query = {}
+
+        const filteredMovies = await movieModel.find({
+            $or: [
+                { title: { $regex: `.*${keyword}.*`, $options: 'i' } },
+                { synopsis: { $regex: `.*${keyword}.*`, $options: 'i' } }, 
+                { genre: { $regex: `.*${keyword}.*`, $options: 'i' } } 
+            ]
+        });
+
+        response.status(200).send({ data: filteredMovies, message: 'Filtered movies'})
+        
+    }
+    catch(error) {
+        response.status(500).send({ message: error.message})
+    }
+}
 
 module.exports = {
     addANewMovie,
     updateAMovie,
     deleteAMovie,
+    searchMovie,
+    getAllMovies,
+    searchByKeyWord
 }

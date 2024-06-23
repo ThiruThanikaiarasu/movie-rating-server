@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const { check } = require('express-validator')
-const { addANewMovie, updateAMovie, deleteAMovie, searchMovie } = require('../controller/movieController')
+const { addANewMovie, updateAMovie, deleteAMovie, searchMovie, searchByKeyWord, getAllMovies } = require('../controller/movieController')
 const { verifyUser, verifyAdmin } = require('../middleware/verify')
 
 router.post(
@@ -74,5 +74,21 @@ router.delete(
     deleteAMovie
 )
 
+router.get(
+    '/',
+
+    searchMovie
+)
+
+router.get(
+    '/all',
+
+    getAllMovies
+)
+router.get(
+    '/:keyword',
+
+    searchByKeyWord
+)
 
 module.exports = router
