@@ -160,11 +160,12 @@ const searchByKeyWord = async (request, response) => {
     }
 }
 
+
 module.exports = {
     addANewMovie,
     updateAMovie,
     deleteAMovie,
     searchMovie,
     getAllMovies,
-    searchByKeyWord
+    searchByKeyWord,
 }

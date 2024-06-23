@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 
 const adminRoute = require('./routes/adminRoute')
 const movieRoute = require('./routes/movieRoute')
+const imageRoute = require('./routes/imageRoute')
 
 const {PORT} = require('./configuration/config')
 const connect = require('./database/connection')
@@ -22,6 +23,7 @@ app.get('/', (request, response) => {
 
 app.use('/api/v1/admin', adminRoute)
 app.use('/api/v1/movie', movieRoute)
+app.use('/api/v1/public/images', imageRoute)
 
 connect() 
     .then( () => {

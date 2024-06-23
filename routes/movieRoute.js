@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router()
 
 const { check } = require('express-validator')
-const { addANewMovie, updateAMovie, deleteAMovie, searchMovie, searchByKeyWord, getAllMovies } = require('../controller/movieController')
+const { addANewMovie, updateAMovie, deleteAMovie, searchMovie, searchByKeyWord, getAllMovies, addImage } = require('../controller/movieController')
 const { verifyUser, verifyAdmin } = require('../middleware/verify')
+const upload = require('../middleware/imageUpload')
 
 router.post(
     '/add',
@@ -90,5 +91,6 @@ router.get(
 
     searchByKeyWord
 )
+
 
 module.exports = router
