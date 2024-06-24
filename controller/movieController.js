@@ -4,6 +4,7 @@ const movieModel = require("../models/movieModel")
 const addANewMovie = async (request, response) => {
     const { title, synopsis, releasedDate, rating, poster, genre, director, cast } = request.body
     const trailer = request.body.trailer || null
+    const {filename} = request.file
 
     try {
         const releaseYear = moment(releasedDate).year()
@@ -13,13 +14,15 @@ const addANewMovie = async (request, response) => {
             return response.status(409).send({ message: 'Movie with the same title and release year already exists' })
         }
 
+        const image = 'public/images/' + filename
+
         const newMovie = new movieModel({
             title, 
             synopsis,
             releasedDate,
             releaseYear,
             rating, 
-            poster, 
+            poster: image, 
             genre, 
             director, 
             cast
@@ -112,7 +115,21 @@ const searchMovie = async (request, response) => {
             query.director = { $regex: director, $options: 'i' }
         }
 
-        const filteredMovie = await movieModel.find(query);
+        const pipeline = [
+            { $match: query },
+            {
+                $addFields: {
+                    poster: {
+                        $concat: [
+                            'http://localhost:3500/api/v1/',
+                            '$poster' 
+                        ]
+                    }
+                }
+            }
+        ]
+
+        const filteredMovie = await movieModel.aggregate(pipeline);
 
         response.status(200).send({ data: filteredMovie, message: 'Filtered results'})
 
@@ -126,7 +143,21 @@ const getAllMovies = async (request, response) => {
 
     try{
 
-        const allMovies = await movieModel.find()
+        const pipeline = [
+            { $match: query },
+            {
+                $addFields: {
+                    poster: {
+                        $concat: [
+                            'http://localhost:3500/api/v1/',
+                            '$poster' 
+                        ]
+                    }
+                }
+            }
+        ]
+
+        const allMovies = await movieModel.aggregate(pipeline)
 
         response.status(200).send({ data: allMovies, message: 'All Movie fetched'})
     }
@@ -138,16 +169,29 @@ const getAllMovies = async (request, response) => {
 const searchByKeyWord = async (request, response) => {
     const {keyword} = request.params
     try{
-
-        let query = {}
-
-        const filteredMovies = await movieModel.find({
+        const query = {
             $or: [
                 { title: { $regex: `.*${keyword}.*`, $options: 'i' } },
-                { synopsis: { $regex: `.*${keyword}.*`, $options: 'i' } }, 
-                { genre: { $regex: `.*${keyword}.*`, $options: 'i' } } 
+                { synopsis: { $regex: `.*${keyword}.*`, $options: 'i' } },
+                { genre: { $regex: `.*${keyword}.*`, $options: 'i' } }
             ]
-        });
+        };
+
+        const pipeline = [
+            { $match: query }, 
+            {
+                $addFields: {
+                    poster: {
+                        $concat: [
+                            'http://localhost:3500/api/v1/', 
+                            '$poster'
+                        ]
+                    }
+                }
+            }
+        ];
+
+        const filteredMovies = await movieModel.aggregate(pipeline);
 
         response.status(200).send({ data: filteredMovies, message: 'Filtered movies'})
         
@@ -164,7 +208,20 @@ const getRandomMovies = (movies, count) => {
 
 const getARandomMovie = async (request, response) => {
     try {
-        const allMovies = await movieModel.find();
+        const baseUrl = 'http://localhost:3500/api/v1/'
+        const pipeline = [
+            {
+                $addFields: {
+                    poster: {
+                        $concat: [
+                            baseUrl,
+                            '$poster' 
+                        ]
+                    }
+                }
+            }
+        ]
+        const allMovies = await movieModel.aggregate(pipeline);
         const randomMovies = await getRandomMovies(allMovies, 8); 
 
         response.status(200).send({ data: randomMovies, message: 'Random movies fetched successfully' });

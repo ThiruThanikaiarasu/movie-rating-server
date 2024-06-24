@@ -8,7 +8,7 @@ const upload = require('../middleware/imageUpload')
 
 router.post(
     '/add',
-
+    upload.single('poster'),
     check('title')
         .notEmpty()
         .withMessage('Title is a mandatory field')
@@ -51,8 +51,8 @@ router.post(
         .notEmpty()
         .withMessage('Each cast member must be a non-empty string'),
 
-    verifyUser,
-    verifyAdmin,
+    // verifyUser,
+    // verifyAdmin,
 
     addANewMovie
 )
