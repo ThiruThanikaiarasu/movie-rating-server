@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const { check } = require('express-validator')
-const { addANewMovie, updateAMovie, deleteAMovie, searchMovie, searchByKeyWord, getAllMovies, addImage, getARandomMovie } = require('../controller/movieController')
+const { addANewMovie, updateAMovie, deleteAMovie, searchMovie, searchByKeyWord, getAllMovies, addImage, getARandomMovie, getAListOfTopRatingMovies, getAListOfLatestMovies } = require('../controller/movieController')
 const { verifyUser, verifyAdmin } = require('../middleware/verify')
 const upload = require('../middleware/imageUpload')
 
@@ -92,11 +92,24 @@ router.get(
 
     getARandomMovie
 )
+
+
+router.get(
+    '/top-rating',
+    
+    getAListOfTopRatingMovies
+)
+
+router.get(
+    '/latest',
+    
+    getAListOfLatestMovies
+)
+
 router.get(
     '/:keyword',
 
     searchByKeyWord
 )
-
 
 module.exports = router

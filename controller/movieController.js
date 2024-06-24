@@ -129,7 +129,7 @@ const searchMovie = async (request, response) => {
             }
         ]
 
-        const filteredMovie = await movieModel.aggregate(pipeline);
+        const filteredMovie = await movieModel.aggregate(pipeline)
 
         response.status(200).send({ data: filteredMovie, message: 'Filtered results'})
 
@@ -175,7 +175,7 @@ const searchByKeyWord = async (request, response) => {
                 { synopsis: { $regex: `.*${keyword}.*`, $options: 'i' } },
                 { genre: { $regex: `.*${keyword}.*`, $options: 'i' } }
             ]
-        };
+        }
 
         const pipeline = [
             { $match: query }, 
@@ -189,9 +189,9 @@ const searchByKeyWord = async (request, response) => {
                     }
                 }
             }
-        ];
+        ]
 
-        const filteredMovies = await movieModel.aggregate(pipeline);
+        const filteredMovies = await movieModel.aggregate(pipeline)
 
         response.status(200).send({ data: filteredMovies, message: 'Filtered movies'})
         
@@ -202,9 +202,9 @@ const searchByKeyWord = async (request, response) => {
 }
 
 const getRandomMovies = (movies, count) => {
-    const shuffled = movies.sort(() => 0.5 - Math.random()); 
-    return shuffled.slice(0, count); 
-};
+    const shuffled = movies.sort(() => 0.5 - Math.random()) 
+    return shuffled.slice(0, count) 
+}
 
 const getARandomMovie = async (request, response) => {
     try {
@@ -221,14 +221,83 @@ const getARandomMovie = async (request, response) => {
                 }
             }
         ]
-        const allMovies = await movieModel.aggregate(pipeline);
-        const randomMovies = await getRandomMovies(allMovies, 8); 
+        const allMovies = await movieModel.aggregate(pipeline)
+        const randomMovies = await getRandomMovies(allMovies, 8) 
 
-        response.status(200).send({ data: randomMovies, message: 'Random movies fetched successfully' });
+        response.status(200).send({ data: randomMovies, message: 'Random movies fetched successfully' })
     } catch (error) {
-        response.status(500).send({ message: error.message });
+        response.status(500).send({ message: error.message })
     }
-};
+}
+
+const getAListOfTopRatingMovies = async (request, response) => {
+    try {
+        console.log("first")
+        const baseUrl = 'http://localhost:3500/api/v1/'
+        const pipeline = [
+            {
+                $addFields: {
+                    poster: {
+                        $concat: [
+                            baseUrl,
+                            '$poster'
+                        ]
+                    }
+                }
+            },
+            {
+                $sort: { rating: -1 } 
+            },
+            {
+                $limit: 8 
+            }
+        ]
+
+        
+        const topRatedMovies = await movieModel.aggregate(pipeline)
+        console.log(topRatedMovies)
+
+        response.status(200).send({ data: topRatedMovies, message: 'Top rated movies fetched successfully' })
+    } catch (error) {
+        response.status(500).send({ message: error.message })
+    }
+}
+
+const getAListOfLatestMovies = async (request, response) => {
+    try {
+        console.log("first1")
+        const baseUrl = 'http://localhost:3500/api/v1/'
+
+        const pipeline = [
+            {
+                $addFields: {
+                    poster: {
+                        $concat: [
+                            baseUrl,
+                            '$poster'
+                        ]
+                    }
+                }
+            },
+            {
+                $sort: { releasedDate: -1 } 
+            },
+            {
+                $limit: 8 
+            }
+        ]
+
+        
+        const latestMovies = await movieModel.aggregate(pipeline)
+        console.log(latestMovies)
+
+        response.status(200).send({ data: latestMovies, message: 'Latest movies fetched successfully' })
+    } catch (error) {
+        response.status(500).send({ message: error.message })
+    }
+}
+
+
 
 module.exports = {
     addANewMovie,
@@ -237,5 +306,7 @@ module.exports = {
     searchMovie,
     getAllMovies,
     searchByKeyWord,
-    getARandomMovie
+    getARandomMovie,
+    getAListOfTopRatingMovies,
+    getAListOfLatestMovies
 }
