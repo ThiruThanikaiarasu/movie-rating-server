@@ -112,8 +112,6 @@ const searchMovie = async (request, response) => {
             query.director = { $regex: director, $options: 'i' }
         }
 
-        console.log(query)
-
         const filteredMovie = await movieModel.find(query);
 
         response.status(200).send({ data: filteredMovie, message: 'Filtered results'})
@@ -139,7 +137,6 @@ const getAllMovies = async (request, response) => {
 
 const searchByKeyWord = async (request, response) => {
     const {keyword} = request.params
-    console.log(keyword)
     try{
 
         let query = {}
@@ -160,6 +157,21 @@ const searchByKeyWord = async (request, response) => {
     }
 }
 
+const getRandomMovies = (movies, count) => {
+    const shuffled = movies.sort(() => 0.5 - Math.random()); 
+    return shuffled.slice(0, count); 
+};
+
+const getARandomMovie = async (request, response) => {
+    try {
+        const allMovies = await movieModel.find();
+        const randomMovies = await getRandomMovies(allMovies, 8); 
+
+        response.status(200).send({ data: randomMovies, message: 'Random movies fetched successfully' });
+    } catch (error) {
+        response.status(500).send({ message: error.message });
+    }
+};
 
 module.exports = {
     addANewMovie,
@@ -168,4 +180,5 @@ module.exports = {
     searchMovie,
     getAllMovies,
     searchByKeyWord,
+    getARandomMovie
 }

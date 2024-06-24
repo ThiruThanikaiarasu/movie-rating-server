@@ -12,6 +12,10 @@ const imageRoute = require('./routes/imageRoute')
 const {PORT} = require('./configuration/config')
 const connect = require('./database/connection')
 
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    credentials: true
+}))
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
