@@ -2,6 +2,8 @@ const moment = require("moment")
 const movieModel = require("../models/movieModel")
 const { response } = require("express")
 
+const baseUrl = 'https://movie-rating-server.vercel.app/api/v1/'
+
 const addANewMovie = async (request, response) => {
     const { title, synopsis, releasedDate, rating, poster, genre, director, cast } = request.body
     const trailer = request.body.trailer || null
@@ -43,7 +45,6 @@ const addANewMovie = async (request, response) => {
 
 const updateAMovie = async (request, response) => {
     const { id } = request.body
-    console.log(request.body)
     const userDetail = request.body
     try {
         const movie = await movieModel.findById({_id:id})
@@ -123,7 +124,7 @@ const searchMovie = async (request, response) => {
                 $addFields: {
                     poster: {
                         $concat: [
-                            'http://localhost:3500/api/v1/',
+                            baseUrl,
                             '$poster' 
                         ]
                     }
@@ -149,7 +150,7 @@ const getAllMovies = async (request, response) => {
                 $addFields: {
                     poster: {
                         $concat: [
-                            'http://localhost:3500/api/v1/',
+                            baseUrl,
                             '$poster' 
                         ]
                     }
@@ -183,7 +184,7 @@ const searchByKeyWord = async (request, response) => {
                 $addFields: {
                     poster: {
                         $concat: [
-                            'http://localhost:3500/api/v1/', 
+                            baseUrl, 
                             '$poster'
                         ]
                     }
@@ -207,9 +208,8 @@ const getRandomMovies = (movies, count) => {
 }
 
 const getARandomMovie = async (request, response) => {
-    
+    console.log(parentDirectory)
     try {
-        const baseUrl = 'http://localhost:3500/api/v1/'
         const pipeline = [
             {
                 $addFields: {
@@ -232,9 +232,8 @@ const getARandomMovie = async (request, response) => {
 }
 
 const getAListOfTopRatingMovies = async (request, response) => {
+    console.log(parentDirectory)
     try {
-        console.log("first")
-        const baseUrl = 'http://localhost:3500/api/v1/'
         const pipeline = [
             {
                 $addFields: {
@@ -256,8 +255,7 @@ const getAListOfTopRatingMovies = async (request, response) => {
 
         
         const topRatedMovies = await movieModel.aggregate(pipeline)
-        console.log(topRatedMovies)
-
+    
         response.status(200).send({ data: topRatedMovies, message: 'Top rated movies fetched successfully' })
     } catch (error) {
         response.status(500).send({ message: error.message })
@@ -266,8 +264,6 @@ const getAListOfTopRatingMovies = async (request, response) => {
 
 const getAListOfLatestMovies = async (request, response) => {
     try {
-        console.log("first1")
-        const baseUrl = 'http://localhost:3500/api/v1/'
 
         const pipeline = [
             {
@@ -290,7 +286,6 @@ const getAListOfLatestMovies = async (request, response) => {
 
         
         const latestMovies = await movieModel.aggregate(pipeline)
-        console.log(latestMovies)
 
         response.status(200).send({ data: latestMovies, message: 'Latest movies fetched successfully' })
     } catch (error) {
@@ -300,16 +295,13 @@ const getAListOfLatestMovies = async (request, response) => {
 
 const getSuggestionForSearch = async (request, response) => {
     const {suggestion} = request.params
-    console.log(suggestion)
     try{
         const regex = new RegExp(`^${suggestion}`, 'i'); 
         const filter = {
                 title: { $regex: regex }
         };
-        console.log(filter)
 
         const suggestions = await movieModel.find(filter).limit(5).select('id title');
-        console.log(suggestions)
        
         response.status(200).send({ data: suggestions, message: 'Search Suggestion'})
 
