@@ -23,7 +23,7 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-app.use('/images', express.static(path.join(__dirname, 'public/images')))
+app.use('/images', express.static(path.join(__dirname, 'images')))
 
 app.get('/', (request, response) => {
     response.status(200).send({ message: "It's working"})
