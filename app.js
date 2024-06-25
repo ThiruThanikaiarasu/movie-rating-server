@@ -4,6 +4,7 @@ const app = express()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const path = require('path')
 
 const adminRoute = require('./routes/adminRoute')
 const movieRoute = require('./routes/movieRoute')
@@ -21,6 +22,8 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+
+app.use('/public/images', express.static(path.join(__dirname, 'public/images')))
 
 app.get('/', (request, response) => {
     response.status(200).send({ message: "It's working"})

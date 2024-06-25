@@ -1,8 +1,7 @@
 const moment = require("moment")
 const movieModel = require("../models/movieModel")
-const { response } = require("express")
 
-const baseUrl = 'https://movie-rating-server.vercel.app/api/v1/'
+const baseUrl = 'https://movie-rating-server.vercel.app/'
 
 const addANewMovie = async (request, response) => {
     const { title, synopsis, releasedDate, rating, poster, genre, director, cast } = request.body
