@@ -16,7 +16,7 @@ const connect = require('./database/connection')
 // app.use(cors())
 app.use(cors({
     // origin: 'http://localhost:5173', 
-    origin: 'https://movie-rating-eta.vercel.app/*', 
+    origin: 'https://movie-rating-eta.vercel.app', 
     credentials: true
 }))
 // app.options('*', cors())
