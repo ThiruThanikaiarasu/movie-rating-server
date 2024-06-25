@@ -143,7 +143,6 @@ const searchMovie = async (request, response) => {
 
 const getAllMovies = async (request, response) => {
     try{
-
         const pipeline = [
             {
                 $addFields: {
@@ -156,9 +155,7 @@ const getAllMovies = async (request, response) => {
                 }
             }
         ]
-
         const allMovies = await movieModel.aggregate(pipeline)
-
         response.status(200).send({ data: allMovies, message: 'All Movie fetched'})
     }
     catch(error) {
@@ -168,7 +165,6 @@ const getAllMovies = async (request, response) => {
 
 const searchByKeyWord = async (request, response) => {
     const {keyword} = request.params
-    console.log(keyword)
     try{
         const query = {
             $or: [
@@ -292,14 +288,30 @@ const getAListOfLatestMovies = async (request, response) => {
 }
 
 const getSuggestionForSearch = async (request, response) => {
-    const {suggestion} = request.params
+    const {filter, suggestion} = request.params
     try{
         const regex = new RegExp(`^${suggestion}`, 'i'); 
-        const filter = {
-                title: { $regex: regex }
+        // const filterOperation = {
+        //         title: { $regex: regex }
+        // };
+
+        let filterOperation = {};
+        if (filter === 'title' || filter === 'all') {
+            filterOperation = { title: { $regex: regex } };
+        } else if (filter === 'genre') {
+            filterOperation = { genre: { $elemMatch: { $regex: regex } } };
+        } else if (filter === 'director') {
+            filterOperation = { director: { $regex: regex } };
+        }
+    
+        // Construct the query object dynamically
+        const query = {
+            $or: [filterOperation]
         };
 
-        const suggestions = await movieModel.find(filter).limit(5).select('id title');
+        const suggestions = await movieModel.find(query).limit(5).select('id title genre director');
+
+        console.log(suggestion)
        
         response.status(200).send({ data: suggestions, message: 'Search Suggestion'})
 

@@ -109,7 +109,7 @@ router.get(
 )
 
 router.get(
-    '/suggestion/:suggestion',
+    '/suggestion/:filter/:suggestion',
 
     getSuggestionForSearch
 )
