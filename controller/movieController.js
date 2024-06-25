@@ -168,6 +168,7 @@ const getAllMovies = async (request, response) => {
 
 const searchByKeyWord = async (request, response) => {
     const {keyword} = request.params
+    console.log(keyword)
     try{
         const query = {
             $or: [
@@ -207,7 +208,6 @@ const getRandomMovies = (movies, count) => {
 }
 
 const getARandomMovie = async (request, response) => {
-    console.log(parentDirectory)
     try {
         const pipeline = [
             {
@@ -231,7 +231,6 @@ const getARandomMovie = async (request, response) => {
 }
 
 const getAListOfTopRatingMovies = async (request, response) => {
-    console.log(parentDirectory)
     try {
         const pipeline = [
             {
