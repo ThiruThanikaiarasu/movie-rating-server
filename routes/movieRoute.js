@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const { check } = require('express-validator')
-const { addANewMovie, updateAMovie, deleteAMovie, searchMovie, searchByKeyWord, getAllMovies, addImage, getARandomMovie, getAListOfTopRatingMovies, getAListOfLatestMovies } = require('../controller/movieController')
+const { addANewMovie, updateAMovie, deleteAMovie, searchMovie, searchByKeyWord, getAllMovies, addImage, getARandomMovie, getAListOfTopRatingMovies, getAListOfLatestMovies, getSuggestionForSearch } = require('../controller/movieController')
 const { verifyUser, verifyAdmin } = require('../middleware/verify')
 const upload = require('../middleware/imageUpload')
 
@@ -60,6 +60,8 @@ router.post(
 router.post(
     '/edit',
 
+    upload.single('poster'),
+    
     verifyUser,
     verifyAdmin,
 
@@ -104,6 +106,12 @@ router.get(
     '/latest',
     
     getAListOfLatestMovies
+)
+
+router.get(
+    '/suggestion/:suggestion',
+
+    getSuggestionForSearch
 )
 
 router.get(

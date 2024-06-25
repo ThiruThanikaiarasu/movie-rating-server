@@ -1,5 +1,6 @@
 const moment = require("moment")
 const movieModel = require("../models/movieModel")
+const { response } = require("express")
 
 const addANewMovie = async (request, response) => {
     const { title, synopsis, releasedDate, rating, poster, genre, director, cast } = request.body
@@ -42,6 +43,7 @@ const addANewMovie = async (request, response) => {
 
 const updateAMovie = async (request, response) => {
     const { id } = request.body
+    console.log(request.body)
     const userDetail = request.body
     try {
         const movie = await movieModel.findById({_id:id})
@@ -140,11 +142,9 @@ const searchMovie = async (request, response) => {
 }
 
 const getAllMovies = async (request, response) => {
-
     try{
 
         const pipeline = [
-            { $match: query },
             {
                 $addFields: {
                     poster: {
@@ -207,6 +207,7 @@ const getRandomMovies = (movies, count) => {
 }
 
 const getARandomMovie = async (request, response) => {
+    
     try {
         const baseUrl = 'http://localhost:3500/api/v1/'
         const pipeline = [
@@ -297,7 +298,26 @@ const getAListOfLatestMovies = async (request, response) => {
     }
 }
 
+const getSuggestionForSearch = async (request, response) => {
+    const {suggestion} = request.params
+    console.log(suggestion)
+    try{
+        const regex = new RegExp(`^${suggestion}`, 'i'); 
+        const filter = {
+                title: { $regex: regex }
+        };
+        console.log(filter)
 
+        const suggestions = await movieModel.find(filter).limit(5).select('id title');
+        console.log(suggestions)
+       
+        response.status(200).send({ data: suggestions, message: 'Search Suggestion'})
+
+    }
+    catch(error) {
+        response.status(500).send({message: error.message})
+    }
+}
 
 module.exports = {
     addANewMovie,
@@ -308,5 +328,6 @@ module.exports = {
     searchByKeyWord,
     getARandomMovie,
     getAListOfTopRatingMovies,
-    getAListOfLatestMovies
+    getAListOfLatestMovies,
+    getSuggestionForSearch
 }
