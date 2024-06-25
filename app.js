@@ -13,11 +13,11 @@ const imageRoute = require('./routes/imageRoute')
 const {PORT} = require('./configuration/config')
 const connect = require('./database/connection')
 
-// app.use(cors({
-//     // origin: 'http://localhost:5173', 
-//     origin: 'https://movie-rating-eta.vercel.app', 
-//     credentials: true
-// }))
+app.use(cors({
+    // origin: 'http://localhost:5173', 
+    origin: 'https://movie-rating-eta.vercel.app/*', 
+    credentials: true
+}))
 app.options('*', cors())
 app.use(bodyParser.json())
 app.use(cookieParser())
